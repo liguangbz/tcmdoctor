@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr" class="redesign no-js"  data-ffo-opensanslight=true data-ffo-opensans=true >
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <link href="./style.css" rel="stylesheet" type="text/css" />
+  <title>医案数据转换工具</title>
+</head>
+
+<body>
+<script>
+    var dataok = true;
+	var pixarray = new Array(32*32);
+	
+	pixarray.length = 32*32;
+
+	for (var i = 0; i < pixarray.length; i++)
+	    pixarray[i] = 0;
+
+	function submitdata() {
+		console.log(pixarray)
+	}
+
+    function changecolor(id) {
+	var tds = document.getElementsByTagName("td");
+
+    for (var i = 0, j = tds.length; i < j; ++i)
+        tds[i].style.backgroundColor = "#ff0000";
+    }
+
+    function mok(id) {
+		if (dataok) {
+		    console.log(id);
+			pixarray[parseInt(id)] = 0xff;
+			dataok = false;
+	        document.getElementById(id).style.background = "#0FF000";
+		} else {
+			dataok = true;
+	        document.getElementById(id).style.background = "#00FFF0";
+		}
+	}
+</script>
+<header id="banner" class="body">
+<h2 onClick="submitdata(); this.innerHTML='OK'">选好了就点这里交卷吧</h2>
+<input name="label" type="text"> 什么经 </input> </br>
+<input name="label" type="text"> 什么方 </input>
+</header><!-- /#banner -->
+<aside id="featured" class="body">
+<table onClick="" border=1>
+<script>
+for(var i = 0;i < 33;i++){//画行
+	var conts = new Array(" "," "," ","痰","喘","胀","肿","痛","痒","疮","疹","伤","热","寒","苦","甜","酸","辛","咸","烦","闷","狂","干","湿","黄","黑","绿","白","红","正常", " "," "," "," ");
+	if (i === 0) {
+	var colms = new Array(" "," "," "," ","眼","口","舌","鼻","耳","咽","面","脑后","颈项","胸","心","胃","少腹","背","腰","臀","生殖器","腿","膝","腘窝","脚","大便","小便"," ", " "," ","","","");
+		document.write("<tr>");
+		for (var j = 0; j < 33; j++) {
+	         document.write("<td  width=30  height=25 bgcolor=#fff000>"+colms[j]+"</td>");
+		}
+		continue;
+	}
+	document.write("<tr>");
+	for(var j = 0;j < 33;j++){//画列
+		var tmp = (i-1)*33+j-1;
+		if (j === 0)
+	        document.write("<td  width=30  height=25 bgcolor=#fff000>"+conts[i]+"</td>");
+		else{
+			if (conts[i] === " " || colms[j] === " ")
+	            document.write("<td id="+tmp+" width=30  height=25 bgcolor=#00fff0 onClick=''> </td>");
+            else
+	            document.write("<td id="+tmp+" width=30  height=25 bgcolor=#00fff0 onClick='mok(this.id)'> </td>");
+		}
+	}
+	document.write("</tr>");
+}
+</script>
+</table>
+<br></br>
+
+</aside>
+</body>
