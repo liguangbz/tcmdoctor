@@ -29,6 +29,7 @@ body {
 
 .homebanner {
 	height: 120px;
+	width: 100%;
 	background-color: #3c4446;
 }
 

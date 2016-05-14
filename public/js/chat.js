@@ -4,7 +4,7 @@ $(function(){
 
 	// getting the id of the room from the url
 	//var id = Number(window.location.pathname.match(/\/chat\/(\d+)$/)[1]);
-	var id = window.location.pathname.match(/\/chat\/.*$/)[1];
+	var id = window.location.pathname.match(/\/chat\/(\d+)$/)[1];
 
 	// connect to the socket
 	var socket = io();
@@ -266,7 +266,7 @@ $(function(){
 		if(status === "connected"){
 
 			section.children().css('display', 'none');
-			onConnect.fadeIn(1200);
+			onConnect.fadeIn(500);
 		}
 
 		else if(status === "inviteSomebody"){
@@ -291,9 +291,9 @@ $(function(){
 		else if(status === "youStartedChatWithNoMessages") {
 
 			left.fadeOut(1200, function() {
-				inviteSomebody.fadeOut(1200,function(){
-					noMessages.fadeIn(1200);
-					footer.fadeIn(1200);
+				inviteSomebody.fadeOut(200,function(){
+					noMessages.fadeIn(200);
+					footer.fadeIn(200);
 				});
 			});
 
@@ -303,9 +303,9 @@ $(function(){
 
 		else if(status === "heStartedChatWithNoMessages") {
 
-			personInside.fadeOut(1200,function(){
-				noMessages.fadeIn(1200);
-				footer.fadeIn(1200);
+			personInside.fadeOut(200,function(){
+				noMessages.fadeIn(200);
+				footer.fadeIn(200);
 			});
 
 			friend = data.users[0];

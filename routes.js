@@ -38,14 +38,16 @@ var trainer = mongoose.model('learning', schm);
 //		});
 // Export a function, so that we can pass 
 // the app and io instances from the app.js file:
-
+var idmap = [];
+var ids = 0;
 module.exports = function(app,io){
 
 	app.get('/', function(req, res){
 
 		// Render views/home.html
 		//res.render('home');
-		var id = uuid.v4();
+		//var id = uuid.v4();
+		var id = ids++;
 		res.redirect('/chat/'+id);
 	});
 
@@ -126,6 +128,7 @@ module.exports = function(app,io){
 			socket.join(roomid);
 			socket.username = "qh";
 			socket.room = roomid;
+
 	//		socket.avatar = gravatar.url(data.avatar, {s: '140', r: 'x', d: 'mm'});
 			socket.join(roomid);
 
@@ -151,7 +154,7 @@ module.exports = function(app,io){
 
 			// Notify the other person in the chat room
 			// that his partner has left
-
+            console.log(this.room);
 			socket.broadcast.to(this.room).emit('leave', {
 				boolean: true,
 				room: this.room,
@@ -166,12 +169,37 @@ module.exports = function(app,io){
 
 		// Handle the sending of messages
 		socket.on('msg', function(data) {
-			ports.findOne({tang: data.msg}, function(err, content) {
-				if (content) {
-			        socket.emit('receive', {msg:content.fang, user: "岐伯", img: data.img});
-				} else {
-			        socket.emit('receive', {msg:data.msg, user: "岐伯", img: data.img});
+			var msg = RegExp('^'+data.msg);
+			var hrec = false;
+			ports.find({tang: msg}, function(err, content) {
+    			if (!err) {
+    				content.forEach(function(qf) {
+    					hrec = true;
+        				if (qf) {
+        				    //console.log(qf.tang);
+        			        socket.emit('receive', {msg:qf.fang, user: "岐伯", img: data.img});
+        				} else {
+        			        socket.emit('receive', {msg:data.msg, user: "岐伯", img: data.img});
+        				}
+				    });
+					if (!hrec) {
+				        var qmsg = RegExp(data.msg);
+    		            ports.find({tang: qmsg}, function(err, content) {
+    			            if (!err) {
+    				            content.forEach(function(qf) {
+        				            if (qf) {
+									    hrec = false;
+        			                    socket.emit('receive', {msg:qf.fang, user: "岐伯", img: data.img});
+        				            } else {
+        			                    socket.emit('receive', {msg:data.msg, user: "岐伯", img: data.img});
+        				            }
+							    });
+					        }
+					    });
+				    }
 				}
+                if (!hrec)
+                   socket.emit('receive', {msg:data.msg, user: "岐伯", img: data.img});
 			});
 			// When the server receives a message, it sends it to the other person in the room.
 			//socket.emit('receive', {msg: data.msg, user: data.user, img: data.img});
