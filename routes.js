@@ -20,11 +20,19 @@ db.once('open', function callback() {
 });
 
 exports.mongoose = mongoose;
+
 var scha = mongoose.Schema({
 	tang: {type: String , required: true, unique: true},
 	fang: {type: String , required: true, unique: true},
 });
 var ports = mongoose.model('ports', scha);
+
+var schm = mongoose.Schema({
+	jing_l: {type: String},
+	fang_l: {type: String},
+	zheng: {type: Array}
+});
+var trainer = mongoose.model('learning', schm);
 //ports.findOne({tang:"桂枝汤"}, function(err, data) {
 //	console.log(data.fang);
 //		});
@@ -50,6 +58,10 @@ module.exports = function(app,io){
 		res.redirect('/chat/'+id);
 	});
 
+	app.get('/fill', function(req, res) {
+		res.render('fill');
+	});
+
 	app.get('/chat/:id', function(req,res){
 
 		// Render the chant.html view
@@ -61,7 +73,23 @@ module.exports = function(app,io){
 
 		// When the client emits the 'load' event, reply with the 
 		// number of people in this chat room
-
+        socket.on('fill', function(data) {
+			console.log(data.msg);
+			console.log(data.jing);
+			console.log(data.fang);
+            //var mt = new trainer({jing_l:data.jing, fang_l:data.fang, zheng:data.msg});
+			var obj = {jing_l:data.jing, fang_l:data.fang, zheng:data.msg};
+            var mt = new trainer(obj);//{jing_l:data.jing, fang_l:data.fang, zheng:data.msg});
+			//mt.jing_l = data.jing;
+			//mt.fang_l = data.fang;
+			//mt.zheng = data.msg.toString();
+			//var lq = data.msg.slice();
+			//console.log(mt.zheng);
+			//mt.markModified('zheng');
+			mt.save(function(err){});
+			//trainer.create({jing_l:data.jing, fang_l:data.fang, zheng:"3456"});
+			//trainer.update({jing_l:data.jing, fang_l:data.fang, zheng:data.msg});
+		});
 		socket.on('load',function(data){
 
 			var room = findClientsSocket(io,data);
