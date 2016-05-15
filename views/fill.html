@@ -11,10 +11,10 @@
 <body>
 <script>
     var dataok = true;
-	var pixarray = new Array(32*32);
+	var pixarray = new Array(32*48);
 	var socket = io();
 
-	pixarray.length = 32*32;
+	pixarray.length = 32*48;
 
 	socket.on('connect', function(){
 	});
@@ -37,6 +37,19 @@
         tds[i].style.backgroundColor = "#ff0000";
     }
 
+    function toindicate(obj) {
+		var num = parseInt(obj.id);
+		var hintx = Math.round(num%33)+1;
+		var hinty = Math.floor(num/33)+1;
+		//console.log(hintx);
+		//console.log(hinty);
+		obj.innerHTML = colms[num%33+1]+conts[Math.floor(num/33)+1];
+	}
+   
+    function restorehint(obj) {
+		obj.innerHTML = " "
+	}
+
     function mok(id) {
 		if (dataok) {
 		    console.log(id);
@@ -57,10 +70,13 @@
 <aside id="featured" class="body">
 <table onClick="" border=1>
 <script>
-for(var i = 0;i < 33;i++){//画行
-	var conts = new Array(" "," "," ","痰","喘","胀","肿","眩","呕","痛","痒","疮","疹","伤","热","寒","苦","甜","酸","辛","咸","烦","闷","狂","干","湿","黄","黑","绿","白","红","正常", " "," "," ");
+for(var i = 0;i < 49;i++){//画行 0,   1,   2,   3,     4,     5,   6,     7,   8,     9,     10,    11,   12,   13,   14,  15
+	var conts = new Array(      " ", " ", "痰","咳",  "呕",  "气","晕",  "悸","痛",  "痒",  "疮",  "疹", "胀", "伤", "寒", "苦",
+			                    "甜","酸","辛","咸",  "烦",  "闷","狂",  "干","湿",  "黄",  "黑",  "绿", "白", "红", "强", "弱",
+								"浮","沉","数","迟",  "滑",  "弦","细",  "芤","涩 ", "代 ",  " ",   " ",  "",  " ",  " ",  " ", "" );
 	if (i === 0) {
-	var colms = new Array(" "," "," ","感觉","眼","口","舌","鼻","耳","咽","面","脑后","颈项", "胸","心","胃","少腹","背","腰","臀","生殖器","腿","膝","腘窝","脚","大便","小便"," ", " "," ","","","");
+	var colms = new Array(      " ", " ", "心","顶",  "眼",  "口","舌",  "鼻","耳",  "咽",  "面",  "脑后","颈", "胸","胃","少腹",
+			                    "背","腰","臀","生殖","腿",  "膝","腘窝","脚","大便","小便","形",  "脉",  " ",  " ",  " ",  " ", " ");
 		document.write("<tr>");
 		for (var j = 0; j < 33; j++) {
 	         document.write("<td  width=30  height=25 bgcolor=#fff000>"+colms[j]+"</td>");
@@ -76,7 +92,7 @@ for(var i = 0;i < 33;i++){//画行
 			if (conts[i] === " " || colms[j] === " ")
 	            document.write("<td id="+tmp+" width=30  height=25 bgcolor=#00fff0 onClick=''> </td>");
             else
-	            document.write("<td id="+tmp+" width=30  height=25 bgcolor=#00fff0 onClick='mok(this.id)'> </td>");
+	            document.write("<td id="+tmp+" width=30  height=25 bgcolor=#00fff0 onmouseout=restorehint(this) onmouseover=toindicate(this) onClick='mok(this.id)'> </td>");
 		}
 	}
 	document.write("</tr>");
