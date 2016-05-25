@@ -5,7 +5,7 @@
 // Use the gravatar module, to turn email addresses into avatar images:
 var uuid = require('uuid');
 var gravatar = require('gravatar');
-
+var symp = require("./symp.js");
 var mongodb = require('mongodb')
   , mongoose = require('mongoose');
 
@@ -40,6 +40,9 @@ var trainer = mongoose.model('learning', schm);
 // the app and io instances from the app.js file:
 var idmap = [];
 var ids = 0;
+var premsg = "";
+var chatobj = "asksymp";
+
 module.exports = function(app,io){
 
 	app.get('/', function(req, res){
@@ -79,8 +82,19 @@ module.exports = function(app,io){
 			console.log(data.msg);
 			console.log(data.jing);
 			console.log(data.fang);
+			console.log(symp.array);
             //var mt = new trainer({jing_l:data.jing, fang_l:data.fang, zheng:data.msg});
 			var obj = {jing_l:data.jing, fang_l:data.fang, zheng:data.msg};
+			for (i = 0; i < 32*48; i++)
+			{
+			    if (data.msg[i] === symp.array[i]) {
+				    console.log("compare ok");
+				} else {
+				    console.log("sorry");
+			    console.log(data.msg[i]);
+			    console.log(symp.array[i]);
+				}
+			}
             var mt = new trainer(obj);//{jing_l:data.jing, fang_l:data.fang, zheng:data.msg});
 			//mt.jing_l = data.jing;
 			//mt.fang_l = data.fang;
@@ -125,7 +139,7 @@ module.exports = function(app,io){
 //				socket.avatar = gravatar.url(data.avatar, {s: '140', r: 'x', d: 'mm'});
 
 			// Add the client to the room
-			socket.join(roomid);
+//			socket.join(roomid);
 			socket.username = "qh";
 			socket.room = roomid;
 
@@ -171,36 +185,89 @@ module.exports = function(app,io){
 		socket.on('msg', function(data) {
 			var msg = RegExp('^'+data.msg);
 			var hrec = false;
-			ports.find({tang: msg}, function(err, content) {
-    			if (!err) {
-    				content.forEach(function(qf) {
-    					hrec = true;
-        				if (qf) {
-        				    //console.log(qf.tang);
-        			        socket.emit('receive', {msg:qf.fang, user: "岐伯", img: data.img});
-        				} else {
-        			        socket.emit('receive', {msg:data.msg, user: "岐伯", img: data.img});
-        				}
-				    });
-					if (!hrec) {
-				        var qmsg = RegExp(data.msg);
-    		            ports.find({tang: qmsg}, function(err, content) {
-    			            if (!err) {
-    				            content.forEach(function(qf) {
-        				            if (qf) {
-									    hrec = false;
-        			                    socket.emit('receive', {msg:qf.fang, user: "岐伯", img: data.img});
-        				            } else {
-        			                    socket.emit('receive', {msg:data.msg, user: "岐伯", img: data.img});
-        				            }
-							    });
-					        }
-					    });
-				    }
-				}
-                if (!hrec)
-                   socket.emit('receive', {msg:data.msg, user: "岐伯", img: data.img});
-			});
+			var tchinese = RegExp("[\u4e00-\u9fa5]+");
+			var getchatfang = RegExp("[\u4e00-\u9fa5]{0,}[查找翻问][\u4e00-\u9fa5]{0,}方[\u4e00-\u9fa5]{0,}");
+			var trygetfang = RegExp("[\u4e00-\u9fa5]{0,}[汤丸散膏丹剂]");
+			var getchatsymp = RegExp("[\u4e00-\u9fa5]{0,}[病痛疼累肿][\u4e00-\u9fa5]{0,}");
+			var getyes = RegExp("是|是的|对|当然|当然了|Yes|yes|Y|y");
+			var togroup = RegExp("[,\uff0c ]");
+			var stack_msg = data.msg.split(togroup);
+			var sweetmsg = ["好的，说吧","可以呀，说吧","没问题，说吧"];
+
+			symp.giveme(data.msg);
+			if (symp.state === "")
+			    chatobj = "asksymp";
+			if (chatobj === "askyes") {
+			    if (data.msg.match(getyes)) {
+				    msg = RegExp('^'+premsg);
+				    chatobj = "askfang";
+				} else 
+				      chatobj = "asksymp";
+			}
+			if (data.msg.match(trygetfang) && chatobj !== "askyes" && chatobj !== "askfang") {
+			   socket.emit('receive', {msg:"你想查询方剂？", user: "岐伯", img: data.img});
+			   chatobj = "askyes";
+			   premsg = data.msg;
+			}
+			if (data.msg.match(getchatfang)) {
+			    chatobj = "askfang";
+    			socket.emit('receive', {msg:sweetmsg[Math.round(Math.random() * 10) % sweetmsg.length], user: "岐伯", img: data.img});
+			}
+			if (data.msg.match(getchatsymp))
+			    chatobj = "asksymp";
+			if (chatobj === "asksymp") {
+    			if (stack_msg.length > 1) {
+    			    for (var i = 0; i < stack_msg.length; i++) {
+    			        symp.giveme(stack_msg[i]);
+    					if (symp.hintmsg !== "")
+    					    socket.emit('receive', {msg:symp.hintmsg, user: "岐伯", img: data.img});
+    					symp.hintmsg = "";
+    				}
+    			} else {
+    			        if (symp.state !== "")
+    					    symp.giveme(data.msg+premsg);
+    					else
+    			            symp.giveme(data.msg);
+    					console.log(symp.hintmsg);
+    					if (symp.hintmsg !== "" && symp.state !== "") {
+    					    premsg = data.msg;
+    					    socket.emit('receive', {msg:symp.hintmsg, user: "岐伯", img: data.img});
+    					}
+    					symp.hintmsg = "";
+    			}
+			}
+			if (chatobj === "askfang") {
+    			ports.find({tang: msg}, function(err, content) {
+        			if (!err) {
+        				content.forEach(function(qf) {
+        					hrec = true;
+            				if (qf) {
+            				    //console.log(qf.tang);
+            			        socket.emit('receive', {msg:qf.fang, user: "岐伯", img: data.img});
+            				} else {
+            			        socket.emit('receive', {msg:data.msg, user: "岐伯", img: data.img});
+            				}
+    				    });
+    					if (!hrec) {
+    				        var qmsg = RegExp(data.msg);
+        		            ports.find({tang: qmsg}, function(err, content) {
+        			            if (!err) {
+        				            content.forEach(function(qf) {
+            				            if (qf) {
+    									    hrec = false;
+            			                    socket.emit('receive', {msg:qf.fang, user: "岐伯", img: data.img});
+            				            } else {
+            			                    socket.emit('receive', {msg:data.msg, user: "岐伯", img: data.img});
+            				            }
+    							    });
+    					        }
+    					    });
+    				    }
+    				}
+                    if (!hrec)
+                       socket.emit('receive', {msg:data.msg, user: "岐伯", img: data.img});
+    			});
+			}
 			// When the server receives a message, it sends it to the other person in the room.
 			//socket.emit('receive', {msg: data.msg, user: data.user, img: data.img});
 		});

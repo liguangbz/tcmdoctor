@@ -84,7 +84,7 @@ function init_net() {
     });
 }
 
-var should_train = false;
+var should_train = true;
 var trainer;
 
 function test3() {
