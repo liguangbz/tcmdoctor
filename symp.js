@@ -26,12 +26,13 @@ function getbody(smsg)
 	var get_she = RegExp("舌|舌胎");
 	var get_yang = RegExp("[咽喉]|嗓子");
 	var get_bi = RegExp("鼻");
+	var get_xing = RegExp("形|身|身体");
 	var get_er = RegExp("耳");
 	var get_mian = RegExp("面|脸");
 	var get_jing = RegExp("颈|脖子");
 	var get_xiong = RegExp("胸");
 	var get_wei = RegExp("胃");
-	var get_fu = RegExp("腹");
+	var get_fu = RegExp("腹|肚子");
 	var get_bei = RegExp("背|后背");
 	var get_yao = RegExp("腰");
 	var get_tun = RegExp("臀|屁股");
@@ -122,6 +123,9 @@ function getbody(smsg)
 		if (bcolms[i].match(get_mai) && smsg.match(get_mai)) {
 			return i;
 		}
+		if (bcolms[i].match(get_xing) && smsg.match(get_xing)) {
+			return i;
+		}
 	}
 	return 0xff;
 }
@@ -151,7 +155,7 @@ function getsymptom(smsg)
 	var fix_men = new RegExp("闷|憋|堵");
 	var fix_kuang = new RegExp("狂|狂妄|疯");
 	var fix_gan = new RegExp("干|干躁|干燥");
-	var fix_shi = new RegExp("湿| 汗");
+	var fix_shi = new RegExp("湿|汗");
 	var fix_huang = new RegExp("黄|橙");
 	var fix_hei = new RegExp("黑|灰");
 	var fix_bai = new RegExp("白");

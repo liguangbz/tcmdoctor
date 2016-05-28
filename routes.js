@@ -54,7 +54,7 @@ n.on('message', function(m) {
 			fang = wf.fang;
 			if (!err)
                 console.log(wf.fang);
-					tsock.emit('receive', {msg:wf.fang, user: "岐伯", img: ""});
+				tsock.emit('receive', {msg:wf.fang, user: "岐伯", img: ""});
 		});
 
 });
@@ -197,6 +197,7 @@ module.exports = function(app,io){
 			var getchatsymp = RegExp("[\u4e00-\u9fa5]{0,}[病痛疼累肿][\u4e00-\u9fa5]{0,}");
 			var getyes = RegExp("是|是的|对|当然|当然了|Yes|yes|Y|y");
 			var togroup = RegExp("[,\uff0c ]|和|还有");
+			var askend = RegExp("没|没有");
 			var stack_msg = data.msg.split(togroup);
 			var sweetmsg = ["好的，说吧","可以呀，说吧","没问题，说吧"];
 
@@ -219,33 +220,37 @@ module.exports = function(app,io){
 			if (data.msg.match(getchatsymp))
 			    chatobj = "asksymp";
 			if (chatobj === "asksymp") {
+				if (data.msg.match(askend)) {
+				} else
     			if (stack_msg.length > 1) {
-    			        symp.giveme(stack_msg);
+					symp.giveme(stack_msg);
+					if (symp.state !== "" && symp.state !== "")
+						socket.emit('receive', {msg:symp.hintmsg, user: "岐伯", img: data.img});
     			} else {
     			        if (symp.state !== "")
     					    symp.giveme(data.msg+premsg);
     					else
     			            symp.giveme(data.msg);
     					console.log(symp.hintmsg);
-						debugger;
     					if (symp.hintmsg !== "" && symp.state !== "") {
     					    premsg = data.msg;
     					    socket.emit('receive', {msg:symp.hintmsg, user: "岐伯", img: data.img});
     					}
     					symp.hintmsg = "";
     			}
-				
 				if (symp.answer !== "" && symp.state === "") {
-					var fang;
-					if (symp.doit === 0xaa) {
-						//console.log(symp.getarray().join());
+					if (data.msg.match(askend)) {
 					    n.send(symp.getarray());
-
-					    console.log("----------------"+symp.doit);
-						symp.doit = 0;
 					}
+					//if (symp.doit === 0xaa) {
+						//console.log(symp.getarray().join());
+
+					 //   console.log("----------------"+symp.doit);
+					//	symp.doit = 0;
+					//}
 					//socket.emit('receive', {msg:fang, user: "岐伯", img: data.img});
-					socket.emit('receive', {msg:symp.answer, user: "岐伯", img: data.img});
+					else
+					    socket.emit('receive', {msg:symp.answer, user: "岐伯", img: data.img});
 				}
 			}
 			if (chatobj === "askfang") {
