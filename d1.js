@@ -36,7 +36,7 @@ layer_defs.push({type:'fc', num_neurons:200, activation:'relu'});
 //layer_defs.push({type:'pool', sx:2, stride:2});
 //layer_defs.push({type:'conv', sx:5, filters:16, stride:1, pad:2, activation:'relu'});
 //layer_defs.push({type:'pool', sx:3, stride:3});
-layer_defs.push({type:'softmax', num_classes:jing.length});
+layer_defs.push({type:'softmax', num_classes:110});
 
 function extract_multi_jing(strfang)
 {
@@ -55,8 +55,10 @@ function init_net() {
     		recs.forEach(function(mp) {
 			   data.push(mp.zheng);
 			   var multim = extract_multi_jing(mp.jing_l);
-			   //console.log(multim);
+			   console.log(multim);
 			   for (var i = 0; i < jing.length; i++) {
+			   if (multim === null)
+			       continue;
 			       var multif = extract_multi_jing(jing[i]);
 				   if (multif.length !== multim.length)
 				      continue;

@@ -2,7 +2,9 @@
 // for the two main URL endpoints of the application - /create and /chat/:id
 // and listens for socket.io messages.
 
-// Use the gravatar module, to turn email addresses into avatar images:
+var childProcess = require('child_process');
+var n = childProcess.fork('./tbrain.js');
+
 var uuid = require('uuid');
 var gravatar = require('gravatar');
 var symp = require("./symp.js");
@@ -10,7 +12,7 @@ var mongodb = require('mongodb')
   , mongoose = require('mongoose');
 
 var dbUrl = "localhost"
-  , dbName = "test";
+  , dbName = "tcm";
 
 mongoose.connect(dbUrl, dbName);
 var db = mongoose.connection;
@@ -22,10 +24,11 @@ db.once('open', function callback() {
 exports.mongoose = mongoose;
 
 var scha = mongoose.Schema({
+	order: {type: String , required: true, unique: true},
 	tang: {type: String , required: true, unique: true},
 	fang: {type: String , required: true, unique: true},
 });
-var ports = mongoose.model('ports', scha);
+var ports = mongoose.model('jingfang', scha);
 
 var schm = mongoose.Schema({
 	jing_l: {type: String},
@@ -40,8 +43,21 @@ var trainer = mongoose.model('learning', schm);
 // the app and io instances from the app.js file:
 var idmap = [];
 var ids = 0;
+var mc= 0;
 var premsg = "";
 var chatobj = "asksymp";
+var tmpfang = "";
+var tsock;
+
+n.on('message', function(m) {
+		ports.findOne({order:m}, function(err, wf) {
+			fang = wf.fang;
+			if (!err)
+                console.log(wf.fang);
+					tsock.emit('receive', {msg:wf.fang, user: "岐伯", img: ""});
+		});
+
+});
 
 module.exports = function(app,io){
 
@@ -75,6 +91,7 @@ module.exports = function(app,io){
 
 	// Initialize a new socket.io application, named 'chat'
 	var chat = io.on('connection', function (socket) {
+			tsock = socket;
 
 		// When the client emits the 'load' event, reply with the 
 		// number of people in this chat room
@@ -82,19 +99,8 @@ module.exports = function(app,io){
 			console.log(data.msg);
 			console.log(data.jing);
 			console.log(data.fang);
-			console.log(symp.array);
             //var mt = new trainer({jing_l:data.jing, fang_l:data.fang, zheng:data.msg});
 			var obj = {jing_l:data.jing, fang_l:data.fang, zheng:data.msg};
-			for (i = 0; i < 32*48; i++)
-			{
-			    if (data.msg[i] === symp.array[i]) {
-				    console.log("compare ok");
-				} else {
-				    console.log("sorry");
-			    console.log(data.msg[i]);
-			    console.log(symp.array[i]);
-				}
-			}
             var mt = new trainer(obj);//{jing_l:data.jing, fang_l:data.fang, zheng:data.msg});
 			//mt.jing_l = data.jing;
 			//mt.fang_l = data.fang;
@@ -168,7 +174,7 @@ module.exports = function(app,io){
 
 			// Notify the other person in the chat room
 			// that his partner has left
-            console.log(this.room);
+            console.log("bye: "+this.room);
 			socket.broadcast.to(this.room).emit('leave', {
 				boolean: true,
 				room: this.room,
@@ -190,19 +196,16 @@ module.exports = function(app,io){
 			var trygetfang = RegExp("[\u4e00-\u9fa5]{0,}[汤丸散膏丹剂]");
 			var getchatsymp = RegExp("[\u4e00-\u9fa5]{0,}[病痛疼累肿][\u4e00-\u9fa5]{0,}");
 			var getyes = RegExp("是|是的|对|当然|当然了|Yes|yes|Y|y");
-			var togroup = RegExp("[,\uff0c ]");
+			var togroup = RegExp("[,\uff0c ]|和|还有");
 			var stack_msg = data.msg.split(togroup);
 			var sweetmsg = ["好的，说吧","可以呀，说吧","没问题，说吧"];
 
-			symp.giveme(data.msg);
-			if (symp.state === "")
-			    chatobj = "asksymp";
 			if (chatobj === "askyes") {
 			    if (data.msg.match(getyes)) {
 				    msg = RegExp('^'+premsg);
 				    chatobj = "askfang";
 				} else 
-				      chatobj = "asksymp";
+				    chatobj = "asksymp";
 			}
 			if (data.msg.match(trygetfang) && chatobj !== "askyes" && chatobj !== "askfang") {
 			   socket.emit('receive', {msg:"你想查询方剂？", user: "岐伯", img: data.img});
@@ -217,24 +220,33 @@ module.exports = function(app,io){
 			    chatobj = "asksymp";
 			if (chatobj === "asksymp") {
     			if (stack_msg.length > 1) {
-    			    for (var i = 0; i < stack_msg.length; i++) {
-    			        symp.giveme(stack_msg[i]);
-    					if (symp.hintmsg !== "")
-    					    socket.emit('receive', {msg:symp.hintmsg, user: "岐伯", img: data.img});
-    					symp.hintmsg = "";
-    				}
+    			        symp.giveme(stack_msg);
     			} else {
     			        if (symp.state !== "")
     					    symp.giveme(data.msg+premsg);
     					else
     			            symp.giveme(data.msg);
     					console.log(symp.hintmsg);
+						debugger;
     					if (symp.hintmsg !== "" && symp.state !== "") {
     					    premsg = data.msg;
     					    socket.emit('receive', {msg:symp.hintmsg, user: "岐伯", img: data.img});
     					}
     					symp.hintmsg = "";
     			}
+				
+				if (symp.answer !== "" && symp.state === "") {
+					var fang;
+					if (symp.doit === 0xaa) {
+						//console.log(symp.getarray().join());
+					    n.send(symp.getarray());
+
+					    console.log("----------------"+symp.doit);
+						symp.doit = 0;
+					}
+					//socket.emit('receive', {msg:fang, user: "岐伯", img: data.img});
+					socket.emit('receive', {msg:symp.answer, user: "岐伯", img: data.img});
+				}
 			}
 			if (chatobj === "askfang") {
     			ports.find({tang: msg}, function(err, content) {
@@ -242,10 +254,9 @@ module.exports = function(app,io){
         				content.forEach(function(qf) {
         					hrec = true;
             				if (qf) {
-            				    //console.log(qf.tang);
-            			        socket.emit('receive', {msg:qf.fang, user: "岐伯", img: data.img});
+            			            socket.emit('receive', {msg:qf.fang, user: "岐伯", img: data.img});
             				} else {
-            			        socket.emit('receive', {msg:data.msg, user: "岐伯", img: data.img});
+            			            socket.emit('receive', {msg:data.msg, user: "岐伯", img: data.img});
             				}
     				    });
     					if (!hrec) {
@@ -263,7 +274,7 @@ module.exports = function(app,io){
     					        }
     					    });
     				    }
-    				}
+    				} else console.log("nothing!");
                     if (!hrec)
                        socket.emit('receive', {msg:data.msg, user: "岐伯", img: data.img});
     			});

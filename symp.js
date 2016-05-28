@@ -4,9 +4,9 @@ var jing = ["太阳", "阳明", "少阳", "厥阴", "少阴", "太阴", "太阳 
                         //   0,     1,     2,      3,      4,     5,     6,      7,     8,     9,     10,    11,    12,      13,      14,     15
 var zconts = new Array(     " ",   " ",   "痰",  "咳",   "呕",   "气",  "晕",   "悸",  "痛",  "痒",  "疮",   "疹",  "胀",   "伤",    "寒",   "热",
 		                    "苦",  "甜",  "酸",  "辛",   "咸",   "烦",  "闷",   "狂",  "干",  "湿",  "黄",   "黑",  "绿",   "白",    "红",   "强", 
-							"弱",  "浮",  "沉",  "数",   "迟",   "滑",  "弦",   "细",  "芤",  "涩 ",  "代 ",  " ",   " ",   "  ",     " ",    " ",  "" );
-var bcolms = new Array(      " ",  " ",   "心",  "头",   "眼",   "口",  "舌",   "鼻",  "耳",  "咽",   "面",  "脑后","颈",   "胸",     "胃",  "少腹",
-                            "背",  "腰",  "臀",  "生殖", "腿",   "膝",  "腘窝", "脚",  "大便", "小便", "形",  "脉",  " ",    " ",      " ",  " ", " ");
+							"弱",  "浮",  "沉",  "数",   "迟",   "滑",  "弦",   "细",  "芤",  "涩",  "代 ",  " ",   " ",   "  ",     " ",    " ",  "" );
+var bcolms = new Array(      " ",  " ",   "心",  "头",   "眼",   "口",  "舌",   "鼻",  "耳",  "咽",  "面",   "脑后","颈",   "胸",     "胃",  "少腹",
+                            "背",  "腰",  "臀",  "生殖", "臂",   "腿",  "膝",  "腘窝", "脚",  "大便","小便", "形",  "脉",  " ",    " ",      " ",  " ", " ");
 
 var tmsg = "头疼";
 var ARRAYLEN = 32*48;
@@ -37,6 +37,7 @@ function getbody(smsg)
 	var get_tun = RegExp("臀|屁股");
 	var get_shengzhi = RegExp("生殖|阴器|阴茎|阴道");
 	var get_tui = RegExp("腿");
+	var get_bi = RegExp("臂|胳膊|膀");
 	var get_xi = RegExp("膝");
 	var get_guowo = RegExp("腘窝");
 	var get_jiao = RegExp("脚");
@@ -98,6 +99,9 @@ function getbody(smsg)
 			return i;
 		}
 		if (bcolms[i].match(get_tui) && smsg.match(get_tui)) {
+			return i;
+		}
+		if (bcolms[i].match(get_bi) && smsg.match(get_bi)) {
 			return i;
 		}
 		if (bcolms[i].match(get_xi) && smsg.match(get_xi)) {
@@ -307,14 +311,15 @@ function reset_symparray ()
 };
 
 var defaultmsg = ["请直接说不舒服之处", "不舒服?", "好吧，说你哪里病了", "。。。", "你没事吧？"];
+var symp_answer = ["还有呢？","其他还有么","嗯。。。还有么？"];
+var brain_answer = "are you ok?";
+var sc = 0;
 
-function giveme_symparray (smsg)
+function get_symparray(smsg)
 {
+	var i, j;
 	i = getsymptom(smsg);
 	j = getbody(smsg);
-	console.log(smsg);
-	console.log(i);
-	console.log(j);
 	if (i === 0xff && j === 0xff) {
 		symp.state = "askall";
 		symp.hintmsg = defaultmsg[Math.round(Math.random() % defaultmsg.length)];
@@ -331,13 +336,54 @@ function giveme_symparray (smsg)
 	   	return;
 	}
     symp.state = "";
+	symp.hintmsg = "";
+	if (sc == 0)
+		symp.reset();
+	sc += 1;
+	if (sc === 4) {
+	    symp.doit = 0xaa, sc = 0;
+	}
+	symp.answer = symp_answer[Math.round(Math.random() % symp_answer.length)];
 	symp_array[(i-1)*(ARRAYWIDTH+1)+j-1] = 0xff;
-};
+}
 
+function get_symp_array()
+{
+	console.log(symp_array.join());
+	return symp_array;
+}
+
+function giveme_symparray (smsg)
+{
+	var msg_type = Object.prototype.toString.call(smsg);
+
+	if (msg_type === "[object Array]") {
+		var symp_count = 0;
+        for (var i = 0; i < smsg.length; i++) {
+			symp_count += getsymptom(smsg[i]);
+		}
+		var symp = getsymptom(smsg[smsg.length-1]);
+		if (Math.floor(symp_count/0xff) === (smsg.length-1)) {
+			for (var i = 0; i < smsg.length-1; i++) {
+				smsg[i] = smsg[i] + zconts[symp];
+			}
+		}
+		smsg.forEach(function(msg) {
+				get_symparray(msg);
+		});
+		
+	}
+	if (msg_type === "[object String]") {
+		get_symparray(smsg);
+	}
+	console.log("symp "+smsg);
+}
 var symp = {};
 symp.state = "";
-symp.array = symp_array;
+symp.getarray = get_symp_array;
 module.exports = symp;
 symp.reset = reset_symparray;
 symp.giveme = giveme_symparray;
 symp.hintmsg = hintmsg;
+//giveme_symparray(["头疼","腿疼"].join());
+//giveme_symparray("头疼");
