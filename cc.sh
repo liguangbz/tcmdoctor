@@ -1,6 +1,6 @@
 #!/bin/bash
 
-m=$(cat s.txt)
+m=$(cat ss.txt)
 for i in $m
 do
 echo "db.jingfangs.insert($i)"

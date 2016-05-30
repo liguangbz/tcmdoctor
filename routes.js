@@ -99,7 +99,7 @@ module.exports = function(app,io){
 		// When the client emits the 'load' event, reply with the 
 		// number of people in this chat room
         socket.on('fill', function(data) {
-			console.log(data.msg);
+			//console.log(data.msg);
 			console.log(data.jing);
 			console.log(data.fang);
             //var mt = new trainer({jing_l:data.jing, fang_l:data.fang, zheng:data.msg});

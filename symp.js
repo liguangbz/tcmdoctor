@@ -38,17 +38,21 @@ function getbody(smsg)
 	var get_tun = RegExp("臀|屁股");
 	var get_shengzhi = RegExp("生殖|阴器|阴茎|阴道");
 	var get_tui = RegExp("腿");
-	var get_bi = RegExp("臂|胳膊|膀");
+	var get_gebo = RegExp("臂|胳膊|膀|肘");
 	var get_xi = RegExp("膝");
 	var get_guowo = RegExp("腘窝");
-	var get_jiao = RegExp("脚");
+	var get_jiao = RegExp("脚|踝");
 	var get_dabian = RegExp("大便|屎");
 	var get_xiaobian = RegExp("小便|尿");
 	var get_mai = RegExp("脉");
+	var get_xin = RegExp("心|感觉");
 	
 	for (var i = 0; i < bcolms.length; i++) {
 		if (bcolms[i].match(get_tou) && smsg.match(get_tou)) {
 			console.log(smsg);
+			return i;
+		}
+		if (bcolms[i].match(get_xin) && smsg.match(get_xin)) {
 			return i;
 		}
 		if (bcolms[i].match(get_touhou) && smsg.match(get_touhou)) {
@@ -102,7 +106,7 @@ function getbody(smsg)
 		if (bcolms[i].match(get_tui) && smsg.match(get_tui)) {
 			return i;
 		}
-		if (bcolms[i].match(get_bi) && smsg.match(get_bi)) {
+		if (bcolms[i].match(get_gebo) && smsg.match(get_gebo)) {
 			return i;
 		}
 		if (bcolms[i].match(get_xi) && smsg.match(get_xi)) {
@@ -136,13 +140,13 @@ function getsymptom(smsg)
 	var fix_tong = new RegExp("[痛疼]");
 	var fix_tan = new RegExp("痰");
 	var fix_ke = new RegExp("[咳嗽喘]");
-	var fix_tu = new RegExp("[吐呕]");
+	var fix_tu = new RegExp("[吐呕]|恶心");
 	var fix_yun = new RegExp("[晕昏眩]|迷糊");
 	var fix_ji = new RegExp("[悸慌]");
 	var fix_yang = new RegExp("痒|刺痒");
 	var fix_chuang = new RegExp("[疮痈脓]");
 	var fix_zhen = new RegExp("[疹]|疙瘩");
-	var fix_zhang = new RegExp("[胀肿]");
+	var fix_zhang = new RegExp("[胀肿满]");
 	var fix_shang = new RegExp("伤|破了|破皮");
 	var fix_han = new RegExp("[寒冷凉冰]");
 	var fix_re = new RegExp("热");
@@ -165,7 +169,7 @@ function getsymptom(smsg)
 	var fix_qiang = new RegExp("强|壮");
 	var fix_ruo = new RegExp("弱|瘦");
 	var fix_mfu = new RegExp("浮");
-	var fix_mchen = new RegExp("沉");
+	var fix_mchen = new RegExp("沉|重");
 	var fix_mchi = new RegExp("迟|缓");
 	var fix_mshuo = new RegExp("数|洪|大");
 	var fix_mxian = new RegExp("弦|紧");

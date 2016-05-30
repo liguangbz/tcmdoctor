@@ -10,6 +10,119 @@
 
 <body>
 <script>
+    var fangs = ["桂枝汤",
+	"麻黄汤",
+	"小柴胡汤",
+	"大承气汤",
+	"理中汤",
+	"四逆汤",
+	"乌梅丸",
+	"柴胡桂枝干姜汤",
+	"半夏泻心汤",
+	"生姜泻心汤",
+	"甘草泻心汤",
+	"大黄黄连泻心汤",
+	"大柴胡汤",
+	"桃核承气汤",
+	"柴胡加龙骨牡蛎汤",
+	"栀子豉汤",
+	"五苓散",
+	"茯苓桂枝白术甘草汤",
+	"大青龙汤",
+	"小青龙汤",
+	"葛根黄芩黄连汤",
+	"葛根汤",
+	"大陷胸丸",
+	"大陷胸汤",
+	"小陷胸汤",
+	"茵陈蒿汤",
+	"吴茱萸汤",
+	"麻子仁丸",
+	"麻黄连翘赤小豆汤",
+	"黄连阿胶汤",
+	"桃花汤",
+	"桔梗汤",
+	"四逆散",
+	"真武汤",
+	"当归四逆汤",
+	"白头翁汤",
+	"调胃承气汤",
+	"芍药甘草汤",
+	"甘草干姜汤",
+	"麻黄杏仁甘草石膏汤",
+	"桂枝甘草汤",
+	"厚朴生姜甘草半夏人参汤",
+	"小建中汤",
+	"抵当汤",
+	"桂枝茯苓丸",
+	"胶艾汤",
+	"当归芍药散",
+	"干姜人参半夏丸",
+	"枳实芍药散",
+	"竹叶汤",
+	"竹皮大丸",
+	"当归贝母苦参",
+	"大黄牡丹皮汤",
+	"薏苡附子败酱散",
+	"排脓散",
+	"黄连粉",
+	"厚朴七物汤",
+	"大黄附子汤",
+	"大建中汤",
+	"附子粳米汤",
+	"栝蒌薤白白酒汤",
+	"栝蒌薤白半夏汤",
+	"枳实薤白桂枝汤",
+	"茯苓杏仁甘草汤",
+	"橘枳生姜汤",
+	"桂枝生姜枳实汤",
+	"桔梗白散",
+	"射干麻黄汤",
+	"麦门冬汤",
+	"厚朴麻黄汤",
+	"越婢加半夏汤",
+	"越婢汤",
+	"茯苓饮",
+	"茯苓桂枝五味甘草汤",
+	"苓甘五味加姜辛半夏杏仁汤",
+	"小半夏汤",
+	"泽泻汤",
+	"木防己汤",
+	"十枣汤",
+	"己椒苈黄丸",
+	"甘遂半夏汤",
+	"肾气丸",
+	"黄芩汤",
+	"小承气汤",
+	"茯苓泽泻汤",
+	"大半夏汤",
+	"栀子大黄汤",
+	"栝蒌瞿麦丸",
+	"蒲灰散",
+	"枳术汤",
+	"黄芪芍药桂酒汤",
+	"越婢加术",
+	"防己茯苓汤",
+	"桂枝龙骨牡蛎汤",
+	"黄芪建中汤",
+	"薯蓣丸",
+	"酸枣汤",
+	"大黄庶虫丸",
+	"黄芪桂枝五物汤",
+	"升麻鳖甲汤",
+	"赤小豆当归散",
+	"苦参汤",
+	"百合知母汤",
+	"百合地黄汤",
+	"防己黄芪汤",
+	"桂枝附子汤",
+	"甘草附子汤",
+	"麻黄杏仁薏苡甘草汤",
+	"桂枝芍药知母汤",
+	"黄土汤",
+	"柏叶汤",
+	"大黄黄连泻心汤",
+	"白虎汤"];
     var dataok = true;
 	var pixarray = new Array(32*48);
 	var socket = io();
@@ -50,6 +163,27 @@
 		obj.innerHTML = " "
 	}
 
+    function searchfang(e) {
+		var keynum;
+		var fang = RegExp(document.getElementById("fang").value);
+		console.log(fang);
+		if (window.event) { // IE
+			keynum = e.keyCode
+		} else if (e.which) { // Netscape/Firefox/Opera
+			keynum = e.which
+		}
+	    console.log(keynum);
+
+		for (var i = 0; i < fangs.length; i++) {
+			if (keynum > 48 && keynum < 90 || keynum === 32) {
+                if (fangs[i].match(fang)) {
+		            document.getElementById("fang").value = fangs[i];
+			        break;
+				}
+			}
+		}
+	}
+
     function mok(id) {
 		if (dataok) {
 		    console.log(id);
@@ -65,7 +199,7 @@
 <header id="banner" class="body">
 <h2 onClick="submitdata(); this.innerHTML='OK'">选好了就点这里交卷吧</h2>
 <input name="label" type="text" id="jing" placeholder="什么经"> </input> </br>
-<input name="label" type="text" id="fang" placeholder="什么方"> </input>
+<input name="label" type="text" id="fang" placeholder="什么方" onkeyup="searchfang(event)"> </input>
 </header><!-- /#banner -->
 <aside id="featured" class="body">
 <table onClick="" border=1>
