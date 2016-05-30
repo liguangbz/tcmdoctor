@@ -137,7 +137,7 @@ function getsymptom(smsg)
 	var fix_tan = new RegExp("痰");
 	var fix_ke = new RegExp("[咳嗽喘]");
 	var fix_tu = new RegExp("[吐呕]");
-	var fix_yun = new RegExp("[晕昏]|迷糊");
+	var fix_yun = new RegExp("[晕昏眩]|迷糊");
 	var fix_ji = new RegExp("[悸慌]");
 	var fix_yang = new RegExp("痒|刺痒");
 	var fix_chuang = new RegExp("[疮痈脓]");
@@ -166,9 +166,9 @@ function getsymptom(smsg)
 	var fix_ruo = new RegExp("弱|瘦");
 	var fix_mfu = new RegExp("浮");
 	var fix_mchen = new RegExp("沉");
-	var fix_mchi = new RegExp("迟");
-	var fix_mshuo = new RegExp("数");
-	var fix_mxian = new RegExp("弦");
+	var fix_mchi = new RegExp("迟|缓");
+	var fix_mshuo = new RegExp("数|洪|大");
+	var fix_mxian = new RegExp("弦|紧");
 	var fix_mhua = new RegExp("滑");
 	var fix_mdai = new RegExp("代");
 	var fix_mjie = new RegExp("节");
@@ -336,7 +336,7 @@ function get_symparray(smsg)
 	}
 	if (j === 0xff) {
 		symp.state = "askbody";
-		symp.hintmsg = "您哪儿不舒服啊？";
+		symp.hintmsg = "您哪里"+zconts[i]+"了？";
 	   	return;
 	}
     symp.state = "";

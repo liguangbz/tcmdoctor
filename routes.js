@@ -51,10 +51,13 @@ var tsock;
 
 n.on('message', function(m) {
 		ports.findOne({order:m}, function(err, wf) {
-			fang = wf.fang;
+			var mahuang = RegExp("麻黄");
+			var fang = wf.fang;
+			if (fang.match(mahuang))
+			    fang = fang+"【请确认你的身体足够强壮，否则勿服此药】";
 			if (!err)
                 console.log(wf.fang);
-				tsock.emit('receive', {msg:wf.fang, user: "岐伯", img: ""});
+				tsock.emit('receive', {msg:fang, user: "岐伯", img: ""});
 		});
 
 });
