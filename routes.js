@@ -50,16 +50,47 @@ var tmpfang = "";
 var tsock;
 
 n.on('message', function(m) {
-		ports.findOne({order:m}, function(err, wf) {
-			var mahuang = RegExp("麻黄");
-			var fang = wf.fang;
-			if (fang.match(mahuang))
-			    fang = fang+"【请确认你的身体足够强壮，否则勿服此药】";
-			if (!err)
-                console.log(wf.fang);
-				tsock.emit('receive', {msg:fang, user: "岐伯", img: ""});
-		});
+		var mahuang = RegExp("麻黄");
+		var yao = RegExp(",|:");
+		var fufang = (m[1] < 0.8 && m[3] > 0.2);
+		var fang = {a:"",b:""};
+		var mfang;
 
+		ports.findOne({order:m[0]}, function(err, wf) {
+				console.log(wf.fang);
+				fang.a = wf.fang;
+				console.log(fang.a.split(yao));
+				if (!fufang) {
+				    if (fang.a.match(mahuang))
+			           fang.a = fang.a+"    【请确认你的身体足够强壮，否则勿服此药】";
+				    tsock.emit('receive', {msg:fang.a, user: "岐伯", img: ""});
+				}
+		});
+		if (fufang) {
+		    ports.findOne({order:m[2]}, function(err, wf) {
+					var f3 = [0];
+					var f1 = fang.a.split(yao);
+					console.log(wf.fang);
+					fang.b = wf.fang;
+					var f2 = wf.fang.split(yao);
+					for (var i = 0; i < f1.length; i = i+2) {
+					    for (var j = 0; j < f2.length; j = j+2) {
+					        if (f1[i] === f2[j]) {
+							    f2.splice(j, 2);
+								continue;
+							}
+						}
+					}
+					for (var k = 0; k < f2.length; k = k+2)
+					     f3[k/2] = f2[k]+":"+f2[k+1];
+					fang.b = f3.join(",");
+					mfang = fang.a+","+fang.b;
+			        if (mfang.match(mahuang))
+			            mfang = mfang+"  【请确认你的身体足够强壮，否则勿服此药】";
+				    tsock.emit('receive', {msg:mfang, user: "岐伯", img: ""});
+
+		    });
+		}
 });
 
 module.exports = function(app,io){

@@ -1,4 +1,4 @@
-var convnetjs = require("convnetjs");
+var convnetjs = require("./convnet.js");
 var fs = require("fs");
 var layer_defs = [];
 var net = new convnetjs.Net();
@@ -91,7 +91,7 @@ function tellme_whichf(data)
 
 }
 
-var should_train = true;
+var should_train = false;
 var trainer;
 
 function test3() {
