@@ -4,9 +4,9 @@ var jing = ["太阳", "阳明", "少阳", "厥阴", "少阴", "太阴", "太阳 
                         //   0,     1,     2,      3,      4,     5,     6,      7,     8,     9,     10,    11,    12,      13,      14,     15
 var zconts = new Array(     " ",   " ",   "痰",  "咳",   "呕",   "气",  "晕",   "悸",  "痛",  "痒",  "疮",   "疹",  "胀",   "伤",    "寒",   "热",
 		                    "苦",  "甜",  "酸",  "辛",   "咸",   "烦",  "闷",   "狂",  "干",  "湿",  "黄",   "黑",  "绿",   "白",    "红",   "强", 
-							"弱",  "浮",  "沉",  "数",   "迟",   "滑",  "弦",   "细",  "芤",  "涩",  "代 ",  " ",   " ",   "  ",     " ",    " ",  "" );
+							"弱",  "浮",  "沉",  "数",   "迟",   "滑",  "弦",   "细",  "芤",  "涩",  "代 ",  "平",   " ",   "  ",     " ",    " ",  "" );
 var bcolms = new Array(      " ",  " ",   "心",  "头",   "眼",   "口",  "舌",   "鼻",  "耳",  "咽",  "面",   "脑后","颈",   "胸",     "胃",  "少腹",
-                            "背",  "腰",  "臀",  "生殖", "臂",   "腿",  "膝",  "腘窝", "脚",  "大便","小便", "形",  "脉",  " ",    " ",      " ",  " ", " ");
+                            "背",  "腰",  "臀",  "生殖", "臂",   "腿",  "膝",  "腘窝", "脚",  "大便","小便", "形",  "脉",  "骨",    " ",      " ",  " ", " ");
 
 var tmsg = "头疼";
 var ARRAYLEN = 32*48;
@@ -36,16 +36,16 @@ function getbody(smsg)
 	var get_bei = RegExp("背|后背");
 	var get_yao = RegExp("腰");
 	var get_tun = RegExp("臀|屁股");
-	var get_shengzhi = RegExp("生殖|阴器|阴茎|阴道");
+	var get_shengzhi = RegExp("阳|阴|生殖|阴器|阴茎|阴道");
 	var get_tui = RegExp("腿");
-	var get_gebo = RegExp("臂|胳膊|膀|肘");
+	var get_gebo = RegExp("臂|胳膊|膀|肘|手");
 	var get_xi = RegExp("膝");
 	var get_guowo = RegExp("腘窝");
 	var get_jiao = RegExp("脚|踝");
 	var get_dabian = RegExp("大便|屎");
 	var get_xiaobian = RegExp("小便|尿");
 	var get_mai = RegExp("脉");
-	var get_xin = RegExp("心|感觉");
+	var get_xin = RegExp("心|感觉|眠|睡");
 	
 	for (var i = 0; i < bcolms.length; i++) {
 		if (bcolms[i].match(get_tou) && smsg.match(get_tou)) {
@@ -161,13 +161,13 @@ function getsymptom(smsg)
 	var fix_gan = new RegExp("干|干躁|干燥");
 	var fix_shi = new RegExp("湿|汗");
 	var fix_huang = new RegExp("黄|橙");
-	var fix_hei = new RegExp("黑|灰");
-	var fix_bai = new RegExp("白");
+	var fix_hei = new RegExp("黑|灰|不醒");
+	var fix_bai = new RegExp("白|不着");
 	var fix_hong = new RegExp("红|紫");
 	var fix_qing = new RegExp("青|绿|翠");
 	var fix_lan = new RegExp("蓝");
 	var fix_qiang = new RegExp("强|壮");
-	var fix_ruo = new RegExp("弱|瘦");
+	var fix_ruo = new RegExp("弱|瘦|不举|痿");
 	var fix_mfu = new RegExp("浮");
 	var fix_mchen = new RegExp("沉|重");
 	var fix_mchi = new RegExp("迟|缓");

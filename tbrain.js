@@ -38,7 +38,7 @@ layer_defs.push({type:'fc', num_neurons:200, activation:'relu'});
 //layer_defs.push({type:'pool', sx:2, stride:2});
 //layer_defs.push({type:'conv', sx:5, filters:16, stride:1, pad:2, activation:'relu'});
 //layer_defs.push({type:'pool', sx:3, stride:3});
-layer_defs.push({type:'softmax', num_classes:110});
+layer_defs.push({type:'softmax', num_classes:123});
 
 function query_labels(fpool)
 {
@@ -92,6 +92,7 @@ function tellme_whichf(data)
 }
 
 var should_train = false;
+//var should_train = true;
 var trainer;
 
 function test3() {

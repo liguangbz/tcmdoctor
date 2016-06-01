@@ -84,6 +84,7 @@ n.on('message', function(m) {
 					for (var k = 0; k < f2.length; k = k+2)
 					     f3[k/2] = f2[k]+":"+f2[k+1];
 					fang.b = f3.join(",");
+					console.log(f3);
 					mfang = fang.a+","+fang.b;
 			        if (mfang.match(mahuang))
 			            mfang = mfang+"  【请确认你的身体足够强壮，否则勿服此药】";
@@ -232,6 +233,7 @@ module.exports = function(app,io){
 			var getyes = RegExp("是|是的|对|当然|当然了|Yes|yes|Y|y");
 			var togroup = RegExp("[,\uff0c ]|和|还有");
 			var askend = RegExp("没|没有");
+			var sizhi = RegExp("四肢");
 			var stack_msg = data.msg.split(togroup);
 			var sweetmsg = ["好的，说吧","可以呀，说吧","没问题，说吧"];
 
@@ -254,6 +256,13 @@ module.exports = function(app,io){
 			if (data.msg.match(getchatsymp))
 			    chatobj = "asksymp";
 			if (chatobj === "asksymp") {
+				if (data.msg.match(sizhi)) {
+					var msg = data.msg;
+					data.msg = data.msg.replace(sizhi,"手");
+					msg = msg.replace(sizhi,"腿");
+					data.msg = data.msg+" "+msg;
+					console.log("sizhi:"+data.msg);
+				}
 				if (data.msg.match(askend)) {
 				} else
     			if (stack_msg.length > 1) {
