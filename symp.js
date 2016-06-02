@@ -166,12 +166,12 @@ function getsymptom(smsg)
 	var fix_ku = new RegExp("苦" );
 	var fix_tian = new RegExp("[甜甘]");
 	var fix_xin = new RegExp("[辛辣]");
-	var fix_suan = new RegExp("酸");
+	var fix_suan = new RegExp("酸|软");
 	var fix_xian = new RegExp("咸");
 	var fix_fan = new RegExp("烦燥|烦躁|烦");
 	var fix_men = new RegExp("闷|憋|堵");
 	var fix_kuang = new RegExp("狂|狂妄|疯");
-	var fix_gan = new RegExp("干|干躁|干燥");
+	var fix_gan = new RegExp("干|干躁|干燥|渴");
 	var fix_shi = new RegExp("湿|汗");
 	var fix_huang = new RegExp("黄|橙");
 	var fix_hei = new RegExp("黑|灰|不醒");
@@ -180,7 +180,7 @@ function getsymptom(smsg)
 	var fix_qing = new RegExp("青|绿|翠");
 	var fix_lan = new RegExp("蓝");
 	var fix_qiang = new RegExp("强|壮");
-	var fix_ruo = new RegExp("弱|瘦|不举|痿");
+	var fix_ruo = new RegExp("弱|瘦|不举|痿|没力气");
 	var fix_mfu = new RegExp("浮");
 	var fix_mchen = new RegExp("沉|重");
 	var fix_mchi = new RegExp("迟|缓");
@@ -188,7 +188,8 @@ function getsymptom(smsg)
 	var fix_mxian = new RegExp("弦|紧");
 	var fix_mhua = new RegExp("滑");
 	var fix_mdai = new RegExp("代");
-	var fix_mjie = new RegExp("节");
+	var fix_mjie = new RegExp("结");
+	var fix_mxi = new RegExp("细");
 	var fix_mkou = new RegExp("芤");
 	var fix_mse = new RegExp("涩");
     
@@ -302,7 +303,7 @@ function getsymptom(smsg)
 		if (zconts[i].match(fix_mxian) && smsg.match(fix_mxian)) {
             return i;
 		}
-		if (zconts[i].match(fix_mjie) && smsg.match(fix_mjie)) {
+		if (zconts[i].match(fix_mxi) && smsg.match(fix_mxi)) {
             return i;
 		}
 		if (zconts[i].match(fix_mdai) && smsg.match(fix_mdai)) {
@@ -341,11 +342,17 @@ function get_symparray(smsg)
 	var i, j;
 	var kesou = RegExp("咳|嗽");
 	var pafeng = RegExp("怕[风寒冷凉]");
+	var kun = RegExp("困|疲|乏");
+	var fare = RegExp("发热|发烧");
 
 	if (smsg.match(kesou))
 		smsg = smsg.replace(kesou, "口咳");
 	if (smsg.match(pafeng))
 		smsg = smsg.replace(pafeng, "心寒");
+	if (smsg.match(kun))
+		smsg = smsg.replace(kun, "心弱");
+	if (smsg.match(fare))
+		smsg = smsg.replace(fare, "头热");
 
 	i = getsymptom(smsg);
 	j = getbody(smsg);
@@ -363,6 +370,46 @@ function get_symparray(smsg)
 		symp.state = "askbody";
 		symp.hintmsg = "您哪里"+zconts[i]+"了？";
 	   	return;
+	}
+    symp.state = "";
+	symp.hintmsg = "";
+
+	i = getsymptom(smsg);
+	j = getbody(smsg);
+	if (i === 0xff && j === 0xff) {
+		symp.state = "askall";
+		symp.hintmsg = defaultmsg[Math.round(Math.random() % defaultmsg.length)];
+	   	return;
+	}
+	if (i === 0xff) {
+		symp.state = "asksymp";
+		symp.hintmsg = "您"+bcolms[j]+"怎么了？";
+		return;
+	}
+	if (j === 0xff) {
+		symp.state = "askbody";
+		symp.hintmsg = "您哪里"+zconts[i]+"了？";
+	   	return;
+	}
+    symp.state = "";
+	symp.hintmsg = "";
+
+	i = getsymptom(smsg);
+	j = getbody(smsg);
+	if (i === 0xff && j === 0xff) {
+		symp.state = "askall";
+		symp.hintmsg = defaultmsg[Math.round(Math.random() % defaultmsg.length)];
+		return;
+	}
+	if (i === 0xff) {
+		symp.state = "asksymp";
+		symp.hintmsg = "您"+bcolms[j]+"怎么了？";
+		return;
+	}
+	if (j === 0xff) {
+		symp.state = "askbody";
+		symp.hintmsg = "您哪里"+zconts[i]+"了？";
+		return;
 	}
     symp.state = "";
 	symp.hintmsg = "";
