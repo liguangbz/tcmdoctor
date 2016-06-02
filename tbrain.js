@@ -38,7 +38,7 @@ layer_defs.push({type:'fc', num_neurons:200, activation:'relu'});
 //layer_defs.push({type:'pool', sx:2, stride:2});
 //layer_defs.push({type:'conv', sx:5, filters:16, stride:1, pad:2, activation:'relu'});
 //layer_defs.push({type:'pool', sx:3, stride:3});
-layer_defs.push({type:'softmax', num_classes:123});
+layer_defs.push({type:'softmax', num_classes:124});
 
 function query_labels(fpool)
 {
@@ -61,11 +61,12 @@ function init_net() {
 	student.find({}, function(err, recs) {
     	if (!err) {
     		recs.forEach(function(mp) {
-					data.push(mp.zheng);
 					fpool.forEach(function(fp) {
 							//console.log(fp.tang);
-							if (fp.tang === mp.fang_l)
-							     labels.push(parseInt(fp.order));
+							if (fp.tang === mp.fang_l) {
+							    data.push(mp.zheng);
+								labels.push(parseInt(fp.order));
+							}
 					});
             });
 			N = labels.length;
@@ -91,8 +92,8 @@ function tellme_whichf(data)
 
 }
 
-var should_train = false;
-//var should_train = true;
+//var should_train = false;
+var should_train = true;
 var trainer;
 
 function test3() {
@@ -116,14 +117,12 @@ function test2() {
         var x = new convnetjs.Vol(VOLW,VOLH,1, 0.0);
         var avloss = 0.0;
 			console.log("labels:"+labels);
-        for(var iters=0;iters<30;iters++) {
-            for(var ix=0;ix<N;ix++) {
-			    //var mmp = data[ix].toString();
-				//var mmo = qdata.toString();
+        for(var iters=0;iters<20;iters++) {
+			for(var ix=0;ix<N;ix++) {
                 x.w = data[ix];
-				//console.log(data.length);
-				//console.log(labels.length);
-				//console.log(x.w);
+				//console.log(labels[ix]);
+				if (typeof(x.w) === 'undefined')
+					continue;
                 var stats = trainer.train(x, labels[ix]);
                 avloss += stats.loss;
             }

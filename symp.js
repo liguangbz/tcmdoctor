@@ -15,9 +15,12 @@ var symp_array = [0];
 
 var hintmsg = "";
 
+var body = [];
 
 function getbody(smsg)
 {
+    var isbody = false;
+
 	var get_tou = RegExp("头|脑");
 	var get_touding = RegExp("顶");
 	var get_touhou = RegExp("后脑|脑后");
@@ -46,92 +49,102 @@ function getbody(smsg)
 	var get_xiaobian = RegExp("小便|尿");
 	var get_mai = RegExp("脉");
 	var get_xin = RegExp("心|感觉|眠|睡");
+	var get_gutou = RegExp("骨|关节");
 	
 	for (var i = 0; i < bcolms.length; i++) {
 		if (bcolms[i].match(get_tou) && smsg.match(get_tou)) {
 			console.log(smsg);
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_xin) && smsg.match(get_xin)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_touhou) && smsg.match(get_touhou)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_touding) && smsg.match(get_touding)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_yan) && smsg.match(get_yan)) {
-		    return i;
+		    body[i] = 1;
 		}
 		if (bcolms[i].match(get_kou) && smsg.match(get_kou)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_she) && smsg.match(get_she)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_yang) && smsg.match(get_yang)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_bi) && smsg.match(get_bi)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_er) && smsg.match(get_er)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_mian) && smsg.match(get_mian)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_jing) && smsg.match(get_jing)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_xiong) && smsg.match(get_xiong)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_fu) && smsg.match(get_fu)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_bei) && smsg.match(get_bei)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_yao) && smsg.match(get_yao)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_tun) && smsg.match(get_tun)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_shengzhi) && smsg.match(get_shengzhi)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_tui) && smsg.match(get_tui)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_gebo) && smsg.match(get_gebo)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_xi) && smsg.match(get_xi)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_guowo) && smsg.match(get_guowo)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_jiao) && smsg.match(get_jiao)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_dabian) && smsg.match(get_dabian)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_xiaobian) && smsg.match(get_xiaobian)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_mai) && smsg.match(get_mai)) {
-			return i;
+			body[i] = 1;
 		}
 		if (bcolms[i].match(get_xing) && smsg.match(get_xing)) {
-			return i;
+			body[i] = 1;
+		}
+		if (bcolms[i].match(get_gutou) && smsg.match(get_gutou)) {
+			body[i] = 1;
+		}
+		if (body[i] === 1) {
+			isbody = true;
 		}
 	}
-	return 0xff;
+	if (isbody)
+		return 1;
+	else
+		return 0xff;
 }
 
 function getsymptom(smsg)
@@ -326,6 +339,14 @@ var sc = 0;
 function get_symparray(smsg)
 {
 	var i, j;
+	var kesou = RegExp("咳|嗽");
+	var pafeng = RegExp("怕[风寒冷凉]");
+
+	if (smsg.match(kesou))
+		smsg = smsg.replace(kesou, "口咳");
+	if (smsg.match(pafeng))
+		smsg = smsg.replace(pafeng, "心寒");
+
 	i = getsymptom(smsg);
 	j = getbody(smsg);
 	if (i === 0xff && j === 0xff) {
@@ -352,12 +373,17 @@ function get_symparray(smsg)
 	    symp.doit = 0xaa, sc = 0;
 	}
 	symp.answer = symp_answer[Math.round(Math.random() % symp_answer.length)];
-	symp_array[(i-1)*(ARRAYWIDTH+1)+j-1] = 0xff;
+	for (var k = 0; k < body.length; k++) {
+		if (body[k] === 1) {
+			symp_array[(i-1)*(ARRAYWIDTH+1)+k-1] = 0xff;
+			console.log("body:"+(k-1));
+		}
+	}
 }
 
 function get_symp_array()
 {
-	console.log(symp_array.join());
+	//console.log(symp_array.join());
 	return symp_array;
 }
 

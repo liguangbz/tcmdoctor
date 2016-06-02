@@ -57,9 +57,11 @@ n.on('message', function(m) {
 		var mfang;
 
 		ports.findOne({order:m[0]}, function(err, wf) {
-				console.log(wf.fang);
+				if (wf === null)
+				    return;
+				//console.log(wf.fang);
 				fang.a = wf.fang;
-				console.log(fang.a.split(yao));
+				//console.log(fang.a.split(yao));
 				if (!fufang) {
 				    if (fang.a.match(mahuang))
 			           fang.a = fang.a+"    【请确认你的身体足够强壮，否则勿服此药】";
@@ -70,7 +72,7 @@ n.on('message', function(m) {
 		    ports.findOne({order:m[2]}, function(err, wf) {
 					var f3 = [0];
 					var f1 = fang.a.split(yao);
-					console.log(wf.fang);
+					//console.log(wf.fang);
 					fang.b = wf.fang;
 					var f2 = wf.fang.split(yao);
 					for (var i = 0; i < f1.length; i = i+2) {
@@ -84,7 +86,7 @@ n.on('message', function(m) {
 					for (var k = 0; k < f2.length; k = k+2)
 					     f3[k/2] = f2[k]+":"+f2[k+1];
 					fang.b = f3.join(",");
-					console.log(f3);
+					//console.log(f3);
 					mfang = fang.a+","+fang.b;
 			        if (mfang.match(mahuang))
 			            mfang = mfang+"  【请确认你的身体足够强壮，否则勿服此药】";
@@ -261,7 +263,7 @@ module.exports = function(app,io){
 					data.msg = data.msg.replace(sizhi,"手");
 					msg = msg.replace(sizhi,"腿");
 					data.msg = data.msg+" "+msg;
-					console.log("sizhi:"+data.msg);
+					//console.log("sizhi:"+data.msg);
 				}
 				if (data.msg.match(askend)) {
 				} else
