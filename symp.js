@@ -184,7 +184,7 @@ function getsymptom(smsg)
 	var fix_mfu = new RegExp("浮");
 	var fix_mchen = new RegExp("沉|重");
 	var fix_mchi = new RegExp("迟|缓");
-	var fix_mshuo = new RegExp("数|洪|大");
+	var fix_mshuo = new RegExp("数|洪|大|频");
 	var fix_mxian = new RegExp("弦|紧");
 	var fix_mhua = new RegExp("滑");
 	var fix_mdai = new RegExp("代");
@@ -344,6 +344,7 @@ function get_symparray(smsg)
 	var pafeng = RegExp("怕[风寒冷凉]");
 	var kun = RegExp("困|疲|乏");
 	var fare = RegExp("发热|发烧");
+	var kouke = RegExp("想喝水");
 
 	if (smsg.match(kesou))
 		smsg = smsg.replace(kesou, "口咳");
@@ -353,6 +354,7 @@ function get_symparray(smsg)
 		smsg = smsg.replace(kun, "心弱");
 	if (smsg.match(fare))
 		smsg = smsg.replace(fare, "头热");
+	if (smsg.match(kouke))
 
 	i = getsymptom(smsg);
 	j = getbody(smsg);
