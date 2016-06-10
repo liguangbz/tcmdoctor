@@ -192,7 +192,6 @@ function getsymptom(smsg)
 	var fix_mxi = new RegExp("细");
 	var fix_mkou = new RegExp("芤");
 	var fix_mse = new RegExp("涩");
-    
 	for (var i = 0; i < zconts.length; i++) {
 		if (zconts[i].match(fix_tong) && smsg.match(fix_tong)) {
 			hintmsg = "胃痛吗？"
@@ -316,7 +315,6 @@ function getsymptom(smsg)
             return i;
 		}
 	}
-	
 	return 0xff;
 	//return smsg.match(fix_tong);
 	//return strfang.match(re);
@@ -355,49 +353,12 @@ function get_symparray(smsg)
 	if (smsg.match(fare))
 		smsg = smsg.replace(fare, "头热");
 	if (smsg.match(kouke))
+		smsg = smsg.replace(kouke, "口渴");
 
 	i = getsymptom(smsg);
 	j = getbody(smsg);
-	if (i === 0xff && j === 0xff) {
-		symp.state = "askall";
-		symp.hintmsg = defaultmsg[Math.round(Math.random() % defaultmsg.length)];
-	   	return;
-	}
-	if (i === 0xff) {
-		symp.state = "asksymp";
-		symp.hintmsg = "您"+bcolms[j]+"怎么了？";
-		return;
-	}
-	if (j === 0xff) {
-		symp.state = "askbody";
-		symp.hintmsg = "您哪里"+zconts[i]+"了？";
-	   	return;
-	}
-    symp.state = "";
-	symp.hintmsg = "";
-
-	i = getsymptom(smsg);
-	j = getbody(smsg);
-	if (i === 0xff && j === 0xff) {
-		symp.state = "askall";
-		symp.hintmsg = defaultmsg[Math.round(Math.random() % defaultmsg.length)];
-	   	return;
-	}
-	if (i === 0xff) {
-		symp.state = "asksymp";
-		symp.hintmsg = "您"+bcolms[j]+"怎么了？";
-		return;
-	}
-	if (j === 0xff) {
-		symp.state = "askbody";
-		symp.hintmsg = "您哪里"+zconts[i]+"了？";
-	   	return;
-	}
-    symp.state = "";
-	symp.hintmsg = "";
-
-	i = getsymptom(smsg);
-	j = getbody(smsg);
+	console.log("symp:"+i);
+	console.log("symp:"+j);
 	if (i === 0xff && j === 0xff) {
 		symp.state = "askall";
 		symp.hintmsg = defaultmsg[Math.round(Math.random() % defaultmsg.length)];
