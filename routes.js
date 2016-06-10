@@ -106,6 +106,9 @@ module.exports = function(app,io){
 		var id = ids++;
 		res.redirect('/chat/'+id);
 	});
+        app.get('/intro', function(req, res) {
+                res.render('intro');
+        });
 
 	app.get('/create', function(req,res){
 
