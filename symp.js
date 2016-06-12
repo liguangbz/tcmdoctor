@@ -343,6 +343,7 @@ function get_symparray(smsg)
 	var kun = RegExp("困|疲|乏");
 	var fare = RegExp("发热|发烧");
 	var kouke = RegExp("想喝水");
+        var youtan = RegExp("痰");
 
 	if (smsg.match(kesou))
 		smsg = smsg.replace(kesou, "口咳");
@@ -354,6 +355,8 @@ function get_symparray(smsg)
 		smsg = smsg.replace(fare, "头热");
 	if (smsg.match(kouke))
 		smsg = smsg.replace(kouke, "口渴");
+	if (smsg.match(youtan))
+		smsg = smsg.replace(youtan, "口痰");
 
 	i = getsymptom(smsg);
 	j = getbody(smsg);
@@ -365,6 +368,10 @@ function get_symparray(smsg)
 		return;
 	}
 	if (i === 0xff) {
+                for (var k = 0; k < body.length; k++) {
+                     if (body[k] === 1)
+                         j = k;
+                }
 		symp.state = "asksymp";
 		symp.hintmsg = "您"+bcolms[j]+"怎么了？";
 		return;
@@ -402,25 +409,25 @@ function giveme_symparray (smsg)
 	var msg_type = Object.prototype.toString.call(smsg);
 
 	if (msg_type === "[object Array]") {
-		var symp_count = 0;
-        for (var i = 0; i < smsg.length; i++) {
-			symp_count += getsymptom(smsg[i]);
-		}
-		var symp = getsymptom(smsg[smsg.length-1]);
-		if (Math.floor(symp_count/0xff) === (smsg.length-1)) {
-			for (var i = 0; i < smsg.length-1; i++) {
-				smsg[i] = smsg[i] + zconts[symp];
-			}
-		}
-		smsg.forEach(function(msg) {
-				get_symparray(msg);
-		});
-		
+            var symp_count = 0;
+            for (var i = 0; i < smsg.length; i++) {
+  	        symp_count += getsymptom(smsg[i]);
+	    }
+	    var symp = getsymptom(smsg[smsg.length-1]);
+	    if (Math.floor(symp_count/0xff) === (smsg.length-1)) {
+	        for (var i = 0; i < smsg.length-1; i++) {
+		    smsg[i] = smsg[i] + zconts[symp];
+	        }
+	    }
+	    smsg.forEach(function(msg) {
+	        get_symparray(msg);
+	    });	
 	}
 	if (msg_type === "[object String]") {
 		get_symparray(smsg);
 	}
 	console.log("symp "+smsg);
+        body = [];
 }
 var symp = {};
 symp.state = "";
