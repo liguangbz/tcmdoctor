@@ -98,8 +98,7 @@ n.on('message', function(m) {
 
 module.exports = function(app,io){
 
-	app.get('/', function(req, res){
-
+	app.get('/', function(req, res) {
 		// Render views/home.html
 		//res.render('home');
 		//var id = uuid.v4();
@@ -124,9 +123,14 @@ module.exports = function(app,io){
 	});
 
 	app.get('/chat/:id', function(req,res){
-
-		// Render the chant.html view
+            var deviceAgent = req.headers["user-agent"].toLowerCase();
+            var agentID = deviceAgent.match(/(iphone|ipad|android)/);
+            if (agentID) {
+		res.render('pchat');
+            } else {
 		res.render('chat');
+            }
+		// Render the chant.html view
 	});
 
 	// Initialize a new socket.io application, named 'chat'

@@ -93,7 +93,7 @@ function tellme_whichf(data)
 }
 
 //var should_train = false;
-var should_train = true;
+var should_train = false;
 var trainer;
 
 function test3() {
