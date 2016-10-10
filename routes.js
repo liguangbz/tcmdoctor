@@ -6,7 +6,7 @@ var childProcess = require('child_process');
 var n = childProcess.fork('./tbrain.js');
 
 var uuid = require('uuid');
-var gravatar = require('gravatar');
+//var gravatar = require('gravatar');
 var symp = require("./symp.js");
 var mongodb = require('mongodb')
   , mongoose = require('mongoose');
@@ -122,8 +122,10 @@ module.exports = function(app,io){
 		res.render('fill');
 	});
 
-	app.get('/chat/:id', function(req,res){
-            var deviceAgent = req.headers["user-agent"].toLowerCase();
+	app.get('/chat/:id', function(req,res) {
+            if (req == undefined)
+                return;
+            var deviceAgent = req.get("user-agent").toLowerCase();
             var agentID = deviceAgent.match(/(iphone|ipad|android)/);
             if (agentID) {
 		res.render('pchat');
@@ -139,13 +141,13 @@ module.exports = function(app,io){
 
 		// When the client emits the 'load' event, reply with the 
 		// number of people in this chat room
-        socket.on('fill', function(data) {
+                socket.on('fill', function(data) {
 			//console.log(data.msg);
 			console.log(data.jing);
 			console.log(data.fang);
-            //var mt = new trainer({jing_l:data.jing, fang_l:data.fang, zheng:data.msg});
+                        //var mt = new trainer({jing_l:data.jing, fang_l:data.fang, zheng:data.msg});
 			var obj = {jing_l:data.jing, fang_l:data.fang, zheng:data.msg};
-            var mt = new trainer(obj);//{jing_l:data.jing, fang_l:data.fang, zheng:data.msg});
+                        var mt = new trainer(obj);//{jing_l:data.jing, fang_l:data.fang, zheng:data.msg});
 			//mt.jing_l = data.jing;
 			//mt.fang_l = data.fang;
 			//mt.zheng = data.msg.toString();
@@ -156,30 +158,6 @@ module.exports = function(app,io){
 			//trainer.create({jing_l:data.jing, fang_l:data.fang, zheng:"3456"});
 			//trainer.update({jing_l:data.jing, fang_l:data.fang, zheng:data.msg});
 		});
-		socket.on('load',function(data){
-
-			var room = findClientsSocket(io,data);
-			if(room.length === 0 ) {
-
-				socket.emit('peopleinchat', {number: 0});
-			}
-			else if(room.length === 1) {
-
-				socket.emit('peopleinchat', {
-					number: 1,
-					user: room[0].username,
-					avatar: room[0].avatar,
-					id: data
-				});
-			}
-			else if(room.length >= 2) {
-
-				chat.emit('tooMany', {boolean: true});
-			}
-		});
-
-		// When the client emits 'login', save his name and avatar,
-		// and add them to the room
 		socket.on('login', function(data) {
 
 				// their own unique socket object
@@ -212,24 +190,6 @@ module.exports = function(app,io){
 				avatars: avatars
 			});
 		});
-
-		// Somebody left the chat
-		socket.on('disconnect', function() {
-
-			// Notify the other person in the chat room
-			// that his partner has left
-            console.log("bye: "+this.room);
-			socket.broadcast.to(this.room).emit('leave', {
-				boolean: true,
-				room: this.room,
-				user: this.username,
-				avatar: this.avatar
-			});
-
-			// leave the room
-			socket.leave(socket.room);
-		});
-
 
 		// Handle the sending of messages
 		socket.on('msg', function(data) {
@@ -341,25 +301,3 @@ module.exports = function(app,io){
 		});
 	});
 };
-
-function findClientsSocket(io,roomId, namespace) {
-	var res = [],
-		ns = io.of(namespace ||"/");    // the default namespace is "/"
-
-	if (ns) {
-		for (var id in ns.connected) {
-			if(roomId) {
-				var index = ns.connected[id].rooms.indexOf(roomId) ;
-				if(index !== -1) {
-					res.push(ns.connected[id]);
-				}
-			}
-			else {
-				res.push(ns.connected[id]);
-			}
-		}
-	}
-	return res;
-}
-
-
