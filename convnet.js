@@ -1663,25 +1663,25 @@ var convnetjs = convnetjs || { REVISION: 'ALPHA' };
       assert(S.layer_type === 'softmax', 'getPrediction function assumes softmax as last layer of the net!');
 
       var p = S.out_act.w;
-	  var res = [];
-	  var maxv = p[0];
+	    var res = [];
+	    var maxv = p[0];
       var maxi = 0;
-      for(var i=1;i<p.length;i++) {
-        if(p[i] > maxv) { maxv = p[i]; maxi = i;}
+      for (var i=1;i<p.length;i++) {
+          if(p[i] > maxv) { maxv = p[i]; maxi = i;}
       }
       res[0] = maxi; // return index of the class with highest class probability
-	  res[1] = maxv;
+	    res[1] = maxv;
 	  
-	  maxv = p[0];
-	  maxi = 0;
+	    maxv = p[0];
+	    maxi = 0;
       for(var i=1;i<p.length;i++) {
-		if (i === res[0])
+		  if (i === res[0])
 			continue;
-        if(p[i] > maxv) { maxv = p[i]; maxi = i;}
+          if(p[i] > maxv) { maxv = p[i]; maxi = i;}
       }
       res[2] = maxi; // return index of the class with highest class probability
-	  res[3] = maxv;
-	  return res;
+	    res[3] = maxv;
+	    return res;
     },
     toJSON: function() {
       var json = {};

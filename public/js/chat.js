@@ -4,7 +4,8 @@ $(function(){
 
 	// getting the id of the room from the url
 	//var id = Number(window.location.pathname.match(/\/chat\/(\d+)$/)[1]);
-	var id = window.location.pathname.match(/\/chat\/(\d+)$/)[1];
+	//var id = window.location.pathname.match(/\/chat\/(\d+)$/)[1];
+	var id = 1;
 
 	// connect to the socket
 	var socket = io();
